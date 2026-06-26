@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Искра — Бот знакомств в Telegram</title>
+    <title>Момент — Бот знакомств в Telegram</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0518;
+            background: #140a14;
             color: #fff;
             line-height: 1.6;
             overflow-x: hidden;
@@ -32,17 +32,17 @@
             justify-content: space-between;
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
-            background: rgba(10, 5, 24, 0.6);
+            background: rgba(20, 10, 20, 0.6);
             border-bottom: 1px solid rgba(255,255,255,0.04);
             transition: all 0.4s ease;
         }
         .navbar.scrolled {
-            background: rgba(10, 5, 24, 0.9);
+            background: rgba(20, 10, 20, 0.9);
         }
         .nav-logo {
             font-weight: 800;
             font-size: 1.3rem;
-            background: linear-gradient(135deg, #fff 0%, #C4B5FD 100%);
+            background: linear-gradient(135deg, #fff 0%, #ff6b9d 50%, #00d4ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -61,14 +61,14 @@
             position: relative;
         }
         .nav-links a:hover {
-            color: #C4B5FD;
+            color: #ff6b9d;
         }
         .nav-links a::after {
             content: '';
             position: absolute;
             bottom: -4px; left: 0;
             width: 0; height: 1.5px;
-            background: linear-gradient(90deg, #7C3AED, #8B5CF6);
+            background: linear-gradient(90deg, #ff2d6d, #00d4ff);
             transition: width 0.3s ease;
         }
         .nav-links a:hover::after {
@@ -77,7 +77,7 @@
         .nav-cta {
             padding: 0.6rem 1.4rem;
             border-radius: 12px;
-            background: linear-gradient(135deg, #6D28D9, #8B5CF6);
+            background: linear-gradient(135deg, #ff2d6d, #ff6b9d);
             color: #fff;
             font-weight: 600;
             font-size: 0.85rem;
@@ -87,7 +87,7 @@
         }
         .nav-cta:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+            box-shadow: 0 4px 20px rgba(255,45,109,0.4);
         }
 
         /* ===== BACKGROUND ORBS ===== */
@@ -108,7 +108,7 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 800px; height: 800px;
-            background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.15) 30%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,45,109,0.3) 0%, rgba(0,212,255,0.1) 40%, transparent 70%);
             filter: blur(40px);
             pointer-events: none;
             z-index: 0;
@@ -124,9 +124,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(124,58,237,0.1);
-            border: 1px solid rgba(139,92,246,0.2);
-            color: #C4B5FD;
+            background: rgba(255,45,109,0.1);
+            border: 1px solid rgba(255,107,157,0.2);
+            color: #ffb8d4;
             padding: 0.6rem 1.2rem;
             border-radius: 100px;
             font-size: 0.85rem;
@@ -137,10 +137,10 @@
         }
         .badge-dot {
             width: 8px; height: 8px;
-            background: #8B5CF6;
+            background: #ff2d6d;
             border-radius: 50%;
             animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(139,92,246,0.5);
+            box-shadow: 0 0 10px rgba(255,45,109,0.6);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -155,11 +155,11 @@
             color: #fff;
             letter-spacing: -0.03em;
             animation: fadeInUp 0.8s ease 0.2s both;
-            text-shadow: 0 0 80px rgba(124,58,237,0.3);
+            text-shadow: 0 0 80px rgba(255,45,109,0.4), 0 0 120px rgba(0,212,255,0.15);
         }
         .hero p {
             font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-            color: rgba(196,181,253,0.7);
+            color: rgba(255,184,212,0.7);
             max-width: 600px;
             margin: 0 auto 3rem;
             animation: fadeInUp 0.8s ease 0.4s both;
@@ -191,13 +191,13 @@
             overflow: hidden;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #6D28D9, #7C3AED, #8B5CF6);
+            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
             color: #fff;
-            box-shadow: 0 4px 30px rgba(109,40,217,0.3), 0 0 60px rgba(124,58,237,0.15);
+            box-shadow: 0 4px 30px rgba(255,45,109,0.3), 0 0 60px rgba(255,45,109,0.15);
         }
         .btn-primary:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(109,40,217,0.5), 0 0 80px rgba(139,92,246,0.25), 0 0 120px rgba(167,139,250,0.1);
+            box-shadow: 0 8px 40px rgba(255,45,109,0.5), 0 0 80px rgba(255,107,157,0.25), 0 0 120px rgba(255,143,184,0.1);
         }
         .btn-primary:active {
             transform: translateY(-1px) scale(0.98);
@@ -209,10 +209,10 @@
             backdrop-filter: blur(10px);
         }
         .btn-secondary:hover {
-            background: rgba(124,58,237,0.1);
-            border-color: rgba(139,92,246,0.25);
+            background: rgba(255,45,109,0.1);
+            border-color: rgba(255,45,109,0.25);
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(124,58,237,0.15);
+            box-shadow: 0 4px 20px rgba(255,45,109,0.15);
         }
 
         /* ===== STATS BAR ===== */
@@ -231,13 +231,13 @@
             font-weight: 800;
             color: #fff;
             line-height: 1;
-            background: linear-gradient(135deg, #C4B5FD 0%, #8B5CF6 100%);
+            background: linear-gradient(135deg, #ffb8d4 0%, #ff6b9d 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .stat-label { 
-            color: rgba(196,181,253,0.5); 
+            color: rgba(255,184,212,0.5); 
             font-size: 0.9rem; 
             margin-top: 0.5rem;
             font-weight: 500;
@@ -254,7 +254,7 @@
         }
         .section-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,92,246,0.15), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,107,157,0.15), transparent);
             margin: 0 auto;
             max-width: 800px;
         }
@@ -269,7 +269,7 @@
         }
         .section-subtitle {
             text-align: center;
-            color: rgba(196,181,253,0.5);
+            color: rgba(255,184,212,0.5);
             font-size: 1.15rem;
             max-width: 550px;
             margin: 0 auto 4rem;
@@ -301,13 +301,13 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,107,157,0.3), transparent);
             opacity: 0;
             transition: opacity 0.5s ease;
         }
         .feature-card:hover {
             background: rgba(255,255,255,0.06);
-            border-color: rgba(139,92,246,0.2);
+            border-color: rgba(255,107,157,0.2);
             transform: translateY(-8px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.25);
         }
@@ -322,8 +322,8 @@
             justify-content: center;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            background: rgba(124,58,237,0.1);
-            border: 1px solid rgba(139,92,246,0.15);
+            background: rgba(255,45,109,0.1);
+            border: 1px solid rgba(255,107,157,0.15);
         }
         .feature-card h3 {
             font-size: 1.2rem;
@@ -332,7 +332,7 @@
             color: #fff;
         }
         .feature-card p { 
-            color: rgba(196,181,253,0.5); 
+            color: rgba(255,184,212,0.5); 
             font-size: 0.95rem; 
             line-height: 1.7;
         }
@@ -362,13 +362,13 @@
         }
         .step:hover {
             transform: translateY(-6px);
-            border-color: rgba(139,92,246,0.2);
+            border-color: rgba(255,107,157,0.2);
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
         .step-num {
             width: 56px; height: 56px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6D28D9, #7C3AED, #8B5CF6);
+            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -376,7 +376,7 @@
             font-size: 1.3rem;
             margin: 0 auto 1.5rem;
             color: #fff;
-            box-shadow: 0 4px 20px rgba(109,40,217,0.3);
+            box-shadow: 0 4px 20px rgba(255,45,109,0.3);
         }
         .step h3 { 
             font-size: 1.15rem; 
@@ -385,7 +385,7 @@
             font-weight: 700;
         }
         .step p { 
-            color: rgba(196,181,253,0.5); 
+            color: rgba(255,184,212,0.5); 
             font-size: 0.95rem;
             line-height: 1.7;
         }
@@ -413,7 +413,7 @@
         }
         .badge-item:hover { 
             transform: scale(1.05) translateY(-4px); 
-            border-color: rgba(139,92,246,0.25);
+            border-color: rgba(255,45,109,0.25);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .badge-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
@@ -422,10 +422,10 @@
             font-size: 0.8rem;
             margin-top: 0.5rem;
         }
-        .r-common { color: rgba(196,181,253,0.5); }
-        .r-rare { color: #A78BFA; }
-        .r-epic { color: #C4B5FD; }
-        .r-legendary { color: #E9D5FF; }
+        .r-common { color: rgba(255,184,212,0.5); }
+        .r-rare { color: #ff8fb8; }
+        .r-epic { color: #ffb8d4; }
+        .r-legendary { color: #ffe0ec; }
 
         /* ===== LEVELS CARDS ===== */
         .level-card {
@@ -445,11 +445,11 @@
         }
         .level-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(139,92,246,0.2);
+            border-color: rgba(255,107,157,0.2);
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
         .level-points {
-            color: #8B5CF6;
+            color: #ff4d85;
             font-weight: 700;
             font-size: 1.1rem;
             margin: 0.75rem 0;
@@ -459,8 +459,8 @@
         .points-box {
             max-width: 750px;
             margin: 3rem auto 0;
-            background: rgba(124,58,237,0.05);
-            border: 1px solid rgba(139,92,246,0.12);
+            background: rgba(255,45,109,0.05);
+            border: 1px solid rgba(255,45,109,0.12);
             border-radius: 24px;
             padding: 2.5rem;
             backdrop-filter: blur(12px);
@@ -484,13 +484,13 @@
         }
         .point-item span { font-size: 1.5rem; }
         .point-item div div:first-child { font-weight: 600; color: #fff; }
-        .point-item div div:last-child { color: rgba(196,181,253,0.5); font-size: 0.85rem; }
+        .point-item div div:last-child { color: rgba(255,184,212,0.5); font-size: 0.85rem; }
         .points-warning {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid rgba(255,255,255,0.06);
             text-align: center;
-            color: rgba(196,181,253,0.4);
+            color: rgba(255,184,212,0.4);
             font-size: 0.9rem;
         }
 
@@ -529,14 +529,14 @@
             gap: 0.75rem;
         }
         .chat-bubble {
-            background: rgba(124,58,237,0.15);
+            background: rgba(255,45,109,0.15);
             border-radius: 16px 16px 4px 16px;
             padding: 0.75rem 1rem;
             font-size: 0.85rem;
             max-width: 85%;
             align-self: flex-end;
             color: #fff;
-            border: 1px solid rgba(139,92,246,0.1);
+            border: 1px solid rgba(255,45,109,0.1);
         }
         .chat-bubble.in {
             background: rgba(255,255,255,0.05);
@@ -554,13 +554,13 @@
         .profile-avatar {
             width: 64px; height: 64px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6D28D9, #7C3AED, #8B5CF6);
+            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
             margin: 0 auto 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 4px 20px rgba(109,40,217,0.3);
+            box-shadow: 0 4px 20px rgba(255,45,109,0.3);
         }
         .compat-bar {
             height: 6px;
@@ -572,9 +572,9 @@
         .compat-fill {
             height: 100%;
             width: 87%;
-            background: linear-gradient(90deg, #6D28D9, #7C3AED, #8B5CF6);
+            background: linear-gradient(90deg, #ff2d6d, #ff4d85, #00d4ff);
             border-radius: 3px;
-            box-shadow: 0 0 10px rgba(124,58,237,0.3);
+            box-shadow: 0 0 10px rgba(255,45,109,0.3);
         }
 
         /* ===== FAQ ===== */
@@ -590,7 +590,7 @@
             transition: all 0.3s ease;
         }
         .faq-item:hover {
-            border-color: rgba(139,92,246,0.15);
+            border-color: rgba(255,107,157,0.15);
         }
         .faq-question {
             padding: 1.5rem 1.75rem;
@@ -604,11 +604,11 @@
             font-size: 1rem;
         }
         .faq-question:hover { 
-            background: rgba(124,58,237,0.04); 
+            background: rgba(255,45,109,0.04); 
         }
         .faq-answer {
             padding: 0 1.75rem 1.5rem;
-            color: rgba(196,181,253,0.5);
+            color: rgba(255,184,212,0.5);
             font-size: 0.95rem;
             line-height: 1.7;
             display: none;
@@ -618,7 +618,7 @@
         .faq-toggle { 
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             font-size: 0.8rem;
-            color: rgba(196,181,253,0.5);
+            color: rgba(255,184,212,0.5);
         }
 
         /* ===== CTA SECTION ===== */
@@ -635,7 +635,7 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(255,45,109,0.15) 0%, rgba(0,212,255,0.08) 40%, transparent 60%);
             filter: blur(30px);
             pointer-events: none;
             
@@ -651,7 +651,7 @@
             letter-spacing: -0.02em;
         }
         .cta-section p {
-            color: rgba(196,181,253,0.5);
+            color: rgba(255,184,212,0.5);
             font-size: 1.15rem;
             max-width: 500px;
             margin: 0 auto 2.5rem;
@@ -664,18 +664,18 @@
         footer {
             text-align: center;
             padding: 3rem 2rem;
-            color: rgba(196,181,253,0.3);
+            color: rgba(255,184,212,0.3);
             font-size: 0.9rem;
             position: relative;
             z-index: 2;
             border-top: 1px solid rgba(255,255,255,0.04);
         }
         footer a { 
-            color: rgba(196,181,253,0.6); 
+            color: rgba(255,184,212,0.6); 
             text-decoration: none;
             transition: color 0.3s ease;
         }
-        footer a:hover { color: #C4B5FD; }
+        footer a:hover { color: #ff6b9d; }
         .footer-links {
             display: flex;
             justify-content: center;
@@ -684,12 +684,12 @@
             flex-wrap: wrap;
         }
         .footer-links a {
-            color: rgba(196,181,253,0.4);
+            color: rgba(255,184,212,0.4);
             text-decoration: none;
             font-size: 0.85rem;
             transition: color 0.3s ease;
         }
-        .footer-links a:hover { color: #C4B5FD; }
+        .footer-links a:hover { color: #ff6b9d; }
 
         /* ===== ANIMATIONS ===== */
         @keyframes fadeInUp {
@@ -739,7 +739,7 @@
         
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="nav-logo">Искра</div>
+        <div class="nav-logo">Момент</div>
         <div class="nav-links">
             <a href="#features">Возможности</a>
             <a href="#how-it-works">Как работает</a>
@@ -757,7 +757,7 @@
                 <span class="badge-dot"></span>
                 Бот знакомств в Telegram
             </div>
-            <h1>Искра</h1>
+            <h1>Момент</h1>
             <p>Знакомства, где важнее не только фото. Считаем совместимость по интересам, предлагаем темы для разговора и каждый день задаём новый вопрос для анкеты.</p>
             <div class="cta-group">
                 <a href="https://t.me/iskraa777_bot" class="btn btn-primary" target="_blank">
@@ -792,7 +792,7 @@
 
     <!-- Features -->
     <section class="section" id="features">
-        <h2 class="section-title reveal">Чем Искра отличается</h2>
+        <h2 class="section-title reveal">Чем Момент отличается</h2>
         <p class="section-subtitle reveal">Не просто свайпы — умный подбор и живое общение</p>
         <div class="features-grid">
             <div class="feature-card reveal">
@@ -818,7 +818,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon">🏆</div>
                 <h3>Система Артефактов</h3>
-                <p>15 коллекционных значков за активность: от «Первой симпатии» до «Легенды Искры». Показывай их в анкете.</p>
+                <p>15 коллекционных значков за активность: от «Первой симпатии» до «Легенды Момента». Показывай их в анкете.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">✅</div>
@@ -882,7 +882,7 @@
             </div>
             <div class="badge-item">
                 <div class="badge-emoji">👑</div>
-                <div class="badge-name">Легенда Искры</div>
+                <div class="badge-name">Легенда Момента</div>
                 <div class="badge-rarity r-legendary">🟡 Легендарный</div>
             </div>
         </div>
@@ -978,13 +978,13 @@
                     <div class="profile-card">
                         <div class="profile-avatar">👤</div>
                         <div style="font-weight:700; color:#fff;">Анна, 24 👩</div>
-                        <div style="color:rgba(196,181,253,0.5);font-size:0.8rem;">📍 Москва</div>
-                        <div style="margin-top:0.5rem;font-size:0.8rem; color:rgba(196,181,253,0.6);">🏷 🎬 Кино 🎵 Музыка ☕ Кофе</div>
+                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;">📍 Москва</div>
+                        <div style="margin-top:0.5rem;font-size:0.8rem; color:rgba(255,184,212,0.6);">🏷 🎬 Кино 🎵 Музыка ☕ Кофе</div>
                         <div style="margin-top:0.75rem;font-size:0.85rem; color:#fff;">💞 Совместимость: <b>87%</b></div>
                         <div class="compat-bar"><div class="compat-fill"></div></div>
                     </div>
                     <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:auto;">
-                        <span style="background:rgba(124,58,237,0.15);padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; color:#fff; border:1px solid rgba(139,92,246,0.1);">❤️ Лайк</span>
+                        <span style="background:rgba(255,45,109,0.15);padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; color:#fff; border:1px solid rgba(255,45,109,0.1);">❤️ Лайк</span>
                         <span style="background:rgba(255,255,255,0.05);padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.06);">💬 Сообщение</span>
                     </div>
                 </div>
@@ -993,13 +993,13 @@
                 <div class="phone-screen">
                     <div style="text-align:center;margin-bottom:1rem;">
                         <div style="font-size:1.2rem;font-weight:700; color:#fff;">🎭 Свидание вслепую</div>
-                        <div style="color:rgba(196,181,253,0.5);font-size:0.8rem;margin-top:0.25rem;">Собеседник найден!</div>
+                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;margin-top:0.25rem;">Собеседник найден!</div>
                     </div>
                     <div class="chat-bubble in">Привет! Какой твой любимый фильм? 🎬</div>
                     <div class="chat-bubble">О, сложный вопрос! Наверное, «Начало» Нолана</div>
                     <div class="chat-bubble in">Отличный выбор! У нас точно найдётся о чём поговорить</div>
                     <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:auto;">
-                        <span style="background:rgba(124,58,237,0.2);color:#C4B5FD;padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; border:1px solid rgba(139,92,246,0.15);">🎭 Открыться</span>
+                        <span style="background:rgba(0,212,255,0.1);color:#00d4ff;padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; border:1px solid rgba(0,212,255,0.15);">🎭 Открыться</span>
                     </div>
                 </div>
             </div>
@@ -1007,28 +1007,28 @@
                 <div class="phone-screen">
                     <div style="text-align:center;margin-bottom:1rem;">
                         <div style="font-size:1.1rem;font-weight:700; color:#fff;">🏆 Твои Артефакты</div>
-                        <div style="color:rgba(196,181,253,0.5);font-size:0.8rem;">5 / 15 получено</div>
+                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;">5 / 15 получено</div>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:0.5rem;">
                         <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
                             <span style="font-size:1.5rem;">💝</span>
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem; color:#fff;">Первая симпатия</div>
-                                <div style="color:rgba(196,181,253,0.4);font-size:0.75rem;">⚪ Обычный</div>
+                                <div style="color:rgba(255,184,212,0.4);font-size:0.75rem;">⚪ Обычный</div>
                             </div>
                         </div>
                         <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
                             <span style="font-size:1.5rem;">📸</span>
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem; color:#fff;">Фотограф</div>
-                                <div style="color:#A78BFA;font-size:0.75rem;">🔵 Редкий</div>
+                                <div style="color:#00d4ff;font-size:0.75rem;">🔵 Редкий</div>
                             </div>
                         </div>
                         <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
                             <span style="font-size:1.5rem;">⭐</span>
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem; color:#fff;">Звезда</div>
-                                <div style="color:#C4B5FD;font-size:0.75rem;">🟣 Эпический</div>
+                                <div style="color:#00d4ff;font-size:0.75rem;">🟣 Эпический</div>
                             </div>
                         </div>
                     </div>
@@ -1090,7 +1090,7 @@
 
     <!-- CTA -->
     <section class="cta-section">
-        <h2 class="reveal">Готов найти свою Искру?</h2>
+        <h2 class="reveal">Твой момент для знакомства</h2>
         <p class="reveal">Запусти бота прямо сейчас — регистрация займёт минуту</p>
         <div class="cta-group reveal">
             <a href="https://t.me/iskraa777_bot" class="btn btn-primary" target="_blank">
@@ -1108,7 +1108,7 @@
             <a href="#levels">Уровни</a>
             <a href="#faq">FAQ</a>
         </div>
-        <p>Искра — Бот знакомств в Telegram</p>
+        <p>Момент — Бот знакомств в Telegram</p>
         <p style="margin-top:0.5rem;">Не аффилирован с Telegram. <a href="https://t.me/iskraa777_bot" target="_blank">@iskra_dating_bot</a></p>
     </footer>
 

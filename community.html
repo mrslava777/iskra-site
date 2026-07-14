@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Правила сообщества — Момент</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #140a14;
+            color: #fff;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(12px) saturate(180%);
+            background: rgba(20, 10, 20, 0.6);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #fff 0%, #ff6b9d 50%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        .nav-back {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .nav-back:hover { color: #ff6b9d; }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+        .updated {
+            color: rgba(255,184,212,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1rem;
+            color: #fff;
+        }
+        p {
+            color: rgba(255,184,212,0.7);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        ul, ol {
+            margin: 1rem 0 1.5rem 1.5rem;
+            color: rgba(255,184,212,0.7);
+            font-size: 0.95rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        .highlight {
+            background: rgba(255,45,109,0.08);
+            border-left: 3px solid #ff2d6d;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+        .highlight p { margin: 0; color: rgba(255,184,212,0.8); }
+        .warning {
+            background: rgba(255, 193, 7, 0.08);
+            border-left: 3px solid #ffc107;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+        .warning p { margin: 0; color: rgba(255, 220, 150, 0.8); }
+        .danger {
+            background: rgba(255, 45, 109, 0.08);
+            border-left: 3px solid #ff2d6d;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+        .danger p { margin: 0; color: rgba(255, 184, 212, 0.8); }
+        a { color: #ff6b9d; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: rgba(255,184,212,0.3);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        footer a { color: rgba(255,184,212,0.6); text-decoration: none; }
+        footer a:hover { color: #ff6b9d; }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: rgba(255,184,212,0.4);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover { color: #ff6b9d; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">Момент</a>
+        <a href="index.html" class="nav-back">← На главную</a>
+    </nav>
+
+    <div class="container">
+        <h1>Правила сообщества</h1>
+        <div class="updated">Последнее обновление: 14 июля 2026 г.</div>
+
+        <div class="highlight">
+            <p>Мы создаём безопасное и уважительное пространство для знакомств. Эти правила обязательны для всех пользователей бота «Момент».</p>
+        </div>
+
+        <h2>1. Общие принципы</h2>
+        <p>Используя бота, вы соглашаетесь соблюдать следующие принципы:</p>
+        <ul>
+            <li><strong>Уважение</strong> — относитесь к другим пользователям так, как хотите, чтобы относились к вам</li>
+            <li><strong>Честность</strong> — указывайте достоверную информацию в анкете</li>
+            <li><strong>Безопасность</strong> — не передавайте личные данные и пароли незнакомым людям</li>
+            <li><strong>Ответственность</strong> — вы несёте ответственность за свои слова и действия</li>
+        </ul>
+
+        <h2>2. Запрещённый контент</h2>
+        <div class="danger">
+            <p>Категорически запрещено размещать, отправлять или распространять:</p>
+        </div>
+        <ul>
+            <li>Фотографии обнажённого тела, порнографический или сексуально откровенный контент</li>
+            <li>Изображения насилия, жестокости или пропаганды терроризма</li>
+            <li>Контент, пропагандирующий ненависть, дискриминацию или превосходство по признакам расы, национальности, религии, пола, ориентации, инвалидности</li>
+            <li>Материалы, нарушающие авторские права третьих лиц</li>
+            <li>Фейковые фотографии, фотографии других людей без их согласия (кэтфишинг)</li>
+            <li>Реклама товаров, услуг, других ботов или каналов без разрешения администрации</li>
+            <li>Ссылки на фишинговые сайты, мошеннические схемы или вредоносное ПО</li>
+        </ul>
+
+        <h2>3. Запрещённое поведение</h2>
+        <p>Следующие действия приведут к немедленной блокировке:</p>
+        <ul>
+            <li>Оскорбления, угрозы, травля или преследование других пользователей (харассмент)</li>
+            <li>Навязчивое поведение, спам, массовая рассылка одинаковых сообщений</li>
+            <li>Вымогательство денег, подарков или личных данных</li>
+            <li>Создание нескольких анкет одним пользователем</li>
+            <li>Использование бота лицам младше 18 лет</li>
+            <li>Попытки обойти блокировку или систему модерации</li>
+            <li>Передача аккаунта третьим лицам</li>
+        </ul>
+
+        <h2>4. Анкета и фото</h2>
+        <ol>
+            <li>На фото должно быть изображено именно вы. Групповые фото, мемы, пейзажи и фото знаменитостей не допускаются.</li>
+            <li>Фото должно быть чётким, с хорошим освещением и без посторонних объектов, закрывающих лицо.</li>
+            <li>Запрещены фото с оружием, наркотиками, алкоголем в явно избыточном количестве или в контексте, пропагандирующем их употребление.</li>
+            <li>Описание анкеты не должно содержать контактных данных (телефонов, ссылок на соцсети, мессенджеры).</li>
+        </ol>
+
+        <h2>5. Система жалоб</h2>
+        <p>Если вы столкнулись с нарушением:</p>
+        <ul>
+            <li>Используйте кнопку «🚫 Жалоба» в анкете пользователя или в чате</li>
+            <li>Опишите ситуацию максимально подробно</li>
+            <li>Не провоцируйте нарушителя — просто пожалуйтесь и прекратите общение</li>
+        </ul>
+        <div class="warning">
+            <p><strong>Важно:</strong> ложные жалобы также наказываются. Не злоупотребляйте системой жалоб.</p>
+        </div>
+
+        <h2>6. Санкции за нарушения</h2>
+        <p>В зависимости от тяжести нарушения применяются:</p>
+        <ul>
+            <li><strong>Предупреждение</strong> — за незначительные нарушения (1 раз)</li>
+            <li><strong>Временная блокировка</strong> — от 1 до 30 дней</li>
+            <li><strong>Перманентный бан</strong> — за серьёзные или повторные нарушения</li>
+            <li><strong>Бан с устройства / IP</strong> — при систематических нарушениях</li>
+        </ul>
+        <p>После 5 подтверждённых жалоб на пользователя он автоматически получает перманентный бан.</p>
+
+        <h2>7. Анонимный чат «Свидание вслепую»</h2>
+        <ol>
+            <li>Анонимный чат создан для комфортного общения без предвзятости по внешности.</li>
+            <li>Запрещено раскрывать свою личность (имя, соцсети, фото) до нажатия кнопки «Открыться».</li>
+            <li>Если собеседник нарушает правила — завершите сессию и пожалуйтесь.</li>
+            <li>Открытие личности происходит только при взаимном согласии обоих участников.</li>
+        </ol>
+
+        <h2>8. Безопасность вне бота</h2>
+        <div class="warning">
+            <p><strong>Мы не несём ответственности за ваши встречи в реальной жизни.</strong> При первой встрече:</p>
+        </div>
+        <ul>
+            <li>Выбирайте публичные места (кафе, парки, торговые центры)</li>
+            <li>Сообщите друзьям или родственникам, куда и с кем идёте</li>
+            <li>Не передавайте деньги или ценные вещи незнакомым людям</li>
+            <li>Будьте осторожны с личной информацией</li>
+            <li>При подозрительном поведении немедленно прекратите общение</li>
+        </ul>
+
+        <h2>9. Изменение правил</h2>
+        <p>Администрация может обновлять правила сообщества. Продолжение использования бота означает принятие новых условий.</p>
+
+        <h2>10. Обратная связь</h2>
+        <p>По вопросам модерации, апелляциям и предложениям обращайтесь через Telegram: <a href="https://t.me/iskraa777_bot" target="_blank">@iskraa777_bot</a></p>
+
+        <div class="highlight" style="margin-top: 3rem;">
+            <p>Спасибо, что помогаете делать «Момент» безопасным и приятным местом для знакомств! 💞</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Главная</a>
+            <a href="privacy.html">Политика конфиденциальности</a>
+            <a href="terms.html">Пользовательское соглашение</a>
+        </div>
+        <p>Момент — Бот знакомств в Telegram</p>
+    </footer>
+</body>
+</html>

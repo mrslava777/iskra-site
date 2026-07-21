@@ -1,13 +1,9 @@
 // ===================== ADMIN DATA =====================
-// Загружаем данные из localStorage (если админка сохранила)
 function loadAdminData() {
   const saved = localStorage.getItem('orchidAdminData');
   if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch(e) {
-      console.error('Ошибка загрузки admin данных', e);
-    }
+    try { return JSON.parse(saved); }
+    catch(e) { console.error('Ошибка загрузки admin данных', e); }
   }
   return null;
 }
@@ -16,21 +12,18 @@ let adminData = loadAdminData();
 
 // ===================== DEFAULT PRODUCT DATA =====================
 const defaultProducts = [
-  {id: 1, name: 'Букет из 15 роз', category: 'bouquets', price: 85, popular: true, desc: 'Нежный букет из 15 свежих роз'},
-  {id: 2, name: 'Орхидея в горшке', category: 'compositions', price: 65, popular: true, desc: 'Живая орхидея фаленопсис'},
-  {id: 3, name: 'Композиция в коробке', category: 'compositions', price: 120, popular: true, desc: 'Розы и эустома в коробке'},
-  {id: 4, name: 'Букет из лент', category: 'ribbons', price: 45, popular: true, desc: 'Ручная работа из лент'},
-  {id: 5, name: 'Мишка с розами', category: 'toys', price: 95, popular: false, desc: 'Плюшевый мишка + 7 роз'},
-  {id: 6, name: 'Шары с гелием', category: 'balloons', price: 35, popular: false, desc: '5 гелевых шаров'},
-  {id: 7, name: 'Открытка', category: 'cards', price: 12, popular: false, desc: 'Ручная работа'},
-  {id: 8, name: '25 тюльпанов', category: 'bouquets', price: 110, popular: false, desc: 'Весенний букет'}
+  {id: 1, name: 'Букет из 15 роз', category: 'bouquets', price: 85, popular: true, desc: 'Нежный букет из 15 свежих роз', image: ''},
+  {id: 2, name: 'Орхидея в горшке', category: 'compositions', price: 65, popular: true, desc: 'Живая орхидея фаленопсис', image: ''},
+  {id: 3, name: 'Композиция в коробке', category: 'compositions', price: 120, popular: true, desc: 'Розы и эустома в коробке', image: ''},
+  {id: 4, name: 'Букет из лент', category: 'ribbons', price: 45, popular: true, desc: 'Ручная работа из лент', image: ''},
+  {id: 5, name: 'Мишка с розами', category: 'toys', price: 95, popular: false, desc: 'Плюшевый мишка + 7 роз', image: ''},
+  {id: 6, name: 'Шары с гелием', category: 'balloons', price: 35, popular: false, desc: '5 гелевых шаров', image: ''},
+  {id: 7, name: 'Открытка', category: 'cards', price: 12, popular: false, desc: 'Ручная работа', image: ''},
+  {id: 8, name: '25 тюльпанов', category: 'bouquets', price: 110, popular: false, desc: 'Весенний букет', image: ''}
 ];
 
-// Получаем актуальные продукты (из админки или дефолт)
 function getProducts() {
-  if (adminData && adminData.products) {
-    return adminData.products;
-  }
+  if (adminData && adminData.products) return adminData.products;
   return defaultProducts;
 }
 
@@ -40,26 +33,22 @@ const products = getProducts();
 function applyAdminSettings() {
   if (!adminData) return;
 
-  // Hero section
+  // Site name & year
   if (adminData.site) {
     const s = adminData.site;
+    document.title = (s.name || 'Орхидея') + ' — Цветочный магазин';
+
+    // Hero
     const titleEl = document.querySelector('.hero-title');
     if (titleEl && s.heroTitle1 && s.heroTitle2) {
       titleEl.innerHTML = `<span class="title-line">${escapeHtml(s.heroTitle1)}</span><span class="title-line accent">${escapeHtml(s.heroTitle2)}</span>`;
     }
-
     const subtitleEl = document.querySelector('.hero-subtitle');
     if (subtitleEl && s.heroSubtitle) subtitleEl.textContent = s.heroSubtitle;
-
     const badgeEl = document.querySelector('.hero-badge');
-    if (badgeEl && s.heroBadge) {
-      badgeEl.innerHTML = `<span class="badge-dot"></span> ${escapeHtml(s.heroBadge)}`;
-    }
-
+    if (badgeEl && s.heroBadge) badgeEl.innerHTML = `<span class="badge-dot"></span> ${escapeHtml(s.heroBadge)}`;
     const btnEl = document.querySelector('.hero-buttons .btn-primary');
     if (btnEl && s.heroBtnCatalog) btnEl.textContent = s.heroBtnCatalog;
-
-    // Features
     if (s.heroFeatures) {
       const featuresContainer = document.querySelector('.hero-features');
       if (featuresContainer) {
@@ -67,7 +56,6 @@ function applyAdminSettings() {
         featuresContainer.innerHTML = features.map(f => `<div class="feature">${escapeHtml(f)}</div>`).join('');
       }
     }
-
     // Categories
     if (s.categories && s.categories.length) {
       const catGrid = document.querySelector('.categories-grid');
@@ -75,63 +63,60 @@ function applyAdminSettings() {
         catGrid.innerHTML = s.categories.map(cat => `
           <div class="category-card">
             <div class="category-image">${cat.icon || '🌸'}</div>
-            <div class="category-info">
-              <h3>${escapeHtml(cat.name)}</h3>
-              <p>${escapeHtml(cat.desc)}</p>
-            </div>
+            <div class="category-info"><h3>${escapeHtml(cat.name)}</h3><p>${escapeHtml(cat.desc)}</p></div>
           </div>
         `).join('');
       }
     }
   }
 
+  // Images
+  if (adminData.images) {
+    const imgs = adminData.images;
+    // Hero main image
+    if (imgs.heroMain) {
+      const centerFlower = document.querySelector('.center-flower');
+      if (centerFlower) centerFlower.innerHTML = `<img src="${imgs.heroMain}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+    // About image
+    if (imgs.about) {
+      const aboutMain = document.querySelector('.about-image-main');
+      if (aboutMain) aboutMain.innerHTML = `<img src="${imgs.about}" style="width:100%;height:100%;object-fit:cover;border-radius:24px;">`;
+    }
+  }
+
   // Contacts
   if (adminData.contacts) {
     const c = adminData.contacts;
-
-    // Address
     const addrVal = document.querySelector('.contact-item:nth-child(1) .contact-value');
     if (addrVal && c.address) addrVal.textContent = c.address;
-
-    // Phone
     const phoneLink = document.querySelector('a[href^="tel:"]');
     const phoneVal = document.querySelector('.contact-item:nth-child(2) .contact-value');
     if (phoneLink && c.rawPhone) phoneLink.href = 'tel:+' + c.rawPhone;
     if (phoneVal && c.phone) phoneVal.textContent = c.phone;
-
-    // Email
     const emailLink = document.querySelector('a[href^="mailto:"]');
     const emailVal = document.querySelector('.contact-item:nth-child(3) .contact-value');
     if (emailLink && c.email) emailLink.href = 'mailto:' + c.email;
     if (emailVal && c.email) emailVal.textContent = c.email;
-
-    // Hours
     const hoursVal = document.querySelector('.contact-item:nth-child(4) .contact-value');
     if (hoursVal && c.hours) hoursVal.textContent = c.hours;
-
-    // WhatsApp
     const waLinks = document.querySelectorAll('a[href^="https://wa.me/"]');
-    waLinks.forEach(link => {
-      if (c.rawPhone) link.href = 'https://wa.me/' + c.rawPhone;
-    });
-
-    // Instagram
+    waLinks.forEach(link => { if (c.rawPhone) link.href = 'https://wa.me/' + c.rawPhone; });
     const igLink = document.querySelector('a[href*="instagram.com"]');
     if (igLink && c.instagram) igLink.href = 'https://www.instagram.com/' + c.instagram;
-
-    // Map
     const mapLink = document.querySelector('.map-placeholder a');
     if (mapLink && c.mapUrl) mapLink.href = c.mapUrl;
-
     // Footer
     const footerAddr = document.querySelector('.footer-contact p:nth-child(2)');
     const footerHours = document.querySelector('.footer-contact p:nth-child(3)');
     const footerPhone = document.querySelector('.footer-contact a[href^="tel:"]');
     if (footerAddr && c.address) footerAddr.textContent = c.address;
     if (footerHours && c.hours) footerHours.textContent = c.hours;
-    if (footerPhone && c.phone) {
-      footerPhone.textContent = c.phone;
-      if (c.rawPhone) footerPhone.href = 'tel:+' + c.rawPhone;
+    if (footerPhone && c.phone) { footerPhone.textContent = c.phone; if (c.rawPhone) footerPhone.href = 'tel:+' + c.rawPhone; }
+    // Footer year
+    if (adminData.site && adminData.site.year) {
+      const copyEl = document.querySelector('.footer-bottom p');
+      if (copyEl) copyEl.textContent = '© ' + adminData.site.year + ' Орхидея. Все права защищены.';
     }
   }
 
@@ -140,10 +125,8 @@ function applyAdminSettings() {
     const a = adminData.about;
     const aboutTitle = document.querySelector('.about-content .section-title');
     if (aboutTitle && a.title) aboutTitle.textContent = a.title;
-
     const aboutText = document.querySelector('.about-text');
     if (aboutText && a.desc) aboutText.textContent = a.desc;
-
     if (a.stats && a.stats.length >= 3) {
       const statNums = document.querySelectorAll('.stat-number');
       const statLabels = document.querySelectorAll('.stat-label');
@@ -152,12 +135,28 @@ function applyAdminSettings() {
         if (statLabels[i] && s.label) statLabels[i].textContent = s.label;
       });
     }
-
     if (a.badge) {
       const badgeNum = document.querySelector('.badge-number');
       const badgeText = document.querySelector('.badge-text');
       if (badgeNum && a.badge.num) badgeNum.textContent = a.badge.num;
       if (badgeText && a.badge.text) badgeText.textContent = a.badge.text;
+    }
+  }
+
+  // Testimonials
+  if (adminData.testimonials && adminData.testimonials.length) {
+    const slider = document.getElementById('testimonialsSlider');
+    if (slider) {
+      slider.innerHTML = adminData.testimonials.map(t => `
+        <div class="testimonial-card">
+          <div class="testimonial-stars">${'⭐'.repeat(t.rating || 5)}</div>
+          <p class="testimonial-text">${escapeHtml(t.text)}</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">${t.avatar || t.name.charAt(0)}</div>
+            <div class="author-info"><span class="author-name">${escapeHtml(t.name)}</span></div>
+          </div>
+        </div>
+      `).join('');
     }
   }
 }
@@ -185,16 +184,13 @@ const cartFooter = document.getElementById('cartFooter');
 const totalPrice = document.getElementById('totalPrice');
 const productsGrid = document.getElementById('productsGrid');
 
-// ========== BURGER MENU (OPTIMIZED) ==========
-
-// Toggle menu on burger click
+// ========== BURGER MENU ==========
 menuToggle.addEventListener('click', (e) => {
   e.stopPropagation();
   menuToggle.classList.toggle('active');
   navLinks.classList.toggle('open');
 });
 
-// Close menu when clicking a link
 document.querySelectorAll('.nav-links a').forEach(link => {
   link.addEventListener('click', () => {
     menuToggle.classList.remove('active');
@@ -202,7 +198,6 @@ document.querySelectorAll('.nav-links a').forEach(link => {
   });
 });
 
-// Close menu when clicking outside
 document.addEventListener('click', (e) => {
   if (!menuToggle.contains(e.target) && !navLinks.contains(e.target) && navLinks.classList.contains('open')) {
     menuToggle.classList.remove('active');
@@ -210,7 +205,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Close menu on scroll
 window.addEventListener('scroll', () => {
   if (navLinks.classList.contains('open')) {
     menuToggle.classList.remove('active');
@@ -219,13 +213,12 @@ window.addEventListener('scroll', () => {
 });
 
 // ========== PRODUCTS ==========
-
 function renderProducts() {
   const popular = products.filter(p => p.popular);
   productsGrid.innerHTML = popular.map(p => `
     <div class="product-card" data-id="${p.id}">
       <div class="product-image">
-        ${getProductIcon(p.category)}
+        ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : getProductIcon(p.category)}
         <span class="product-badge">Хит</span>
       </div>
       <div class="product-info">
@@ -236,7 +229,6 @@ function renderProducts() {
     </div>
   `).join('');
 
-  // Add click handlers
   document.querySelectorAll('.product-card').forEach(card => {
     card.addEventListener('click', () => {
       const id = parseInt(card.dataset.id);
@@ -246,31 +238,21 @@ function renderProducts() {
 }
 
 function getProductIcon(cat) {
-  const icons = {
-    bouquets: '🌹', compositions: '🎁', balloons: '🎈',
-    toys: '🧸', cards: '💌', ribbons: '🎀'
-  };
+  const icons = { bouquets: '🌹', compositions: '🎁', balloons: '🎈', toys: '🧸', cards: '💌', ribbons: '🎀' };
   return `<div style="font-size:48px">${icons[cat] || '🌸'}</div>`;
 }
 
 function getCategoryName(cat) {
-  const names = {
-    bouquets: 'Букеты', compositions: 'Композиции', balloons: 'Шары',
-    toys: 'Игрушки', cards: 'Открытки', ribbons: 'Букеты из лент'
-  };
+  const names = { bouquets: 'Букеты', compositions: 'Композиции', balloons: 'Шары', toys: 'Игрушки', cards: 'Открытки', ribbons: 'Букеты из лент' };
   return names[cat] || cat;
 }
 
 // ========== CART ==========
-
 function addToCart(id) {
   const product = products.find(p => p.id === id);
   const existing = cart.find(item => item.id === id);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({...product, qty: 1});
-  }
+  if (existing) { existing.qty++; }
+  else { cart.push({...product, qty: 1}); }
   updateCart();
   showCart();
 }
@@ -285,7 +267,6 @@ function updateCart() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
   cartCount.textContent = count;
   totalPrice.textContent = total + ' BYN';
-
   if (cart.length === 0) {
     cartEmpty.style.display = 'block';
     cartItems.style.display = 'none';
@@ -317,7 +298,6 @@ function hideCart() {
 }
 
 // ========== EVENT LISTENERS ==========
-
 cartBtn.addEventListener('click', showCart);
 closeCart.addEventListener('click', hideCart);
 
@@ -325,21 +305,13 @@ cartModal.addEventListener('click', (e) => {
   if (e.target === cartModal) hideCart();
 });
 
-// Navbar scroll effect
 window.addEventListener('scroll', () => {
-  if (window.scrollY > 50) {
-    navbar.classList.add('scrolled');
-  } else {
-    navbar.classList.remove('scrolled');
-  }
+  if (window.scrollY > 50) navbar.classList.add('scrolled');
+  else navbar.classList.remove('scrolled');
 
-  if (window.scrollY > 500) {
-    scrollTop.classList.add('visible');
-  } else {
-    scrollTop.classList.remove('visible');
-  }
+  if (window.scrollY > 500) scrollTop.classList.add('visible');
+  else scrollTop.classList.remove('visible');
 
-  // Active nav link
   const sections = document.querySelectorAll('section[id]');
   const scrollPos = window.scrollY + 100;
   sections.forEach(section => {
@@ -349,9 +321,7 @@ window.addEventListener('scroll', () => {
     if (scrollPos >= top && scrollPos < top + height) {
       document.querySelectorAll('.nav-links a').forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('href') === '#' + id) {
-          link.classList.add('active');
-        }
+        if (link.getAttribute('href') === '#' + id) link.classList.add('active');
       });
     }
   });
@@ -361,29 +331,22 @@ scrollTop.addEventListener('click', () => {
   window.scrollTo({top: 0, behavior: 'smooth'});
 });
 
-// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
     const href = this.getAttribute('href');
     if (href.length > 1) {
       e.preventDefault();
       const target = document.querySelector(href);
-      if (target) {
-        target.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
+      if (target) target.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
   });
 });
 
-// Category cards click
 document.querySelectorAll('.category-card').forEach(card => {
-  card.addEventListener('click', () => {
-    window.location.href = '#catalog';
-  });
+  card.addEventListener('click', () => { window.location.href = '#catalog'; });
 });
 
 // ========== AUTO-REFRESH FROM ADMIN ==========
-// Проверяем обновления от админки каждые 2 секунды
 setInterval(() => {
   const updated = localStorage.getItem('orchidDataUpdated');
   if (updated) {

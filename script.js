@@ -27,7 +27,41 @@ const cartFooter = document.getElementById('cartFooter');
 const totalPrice = document.getElementById('totalPrice');
 const productsGrid = document.getElementById('productsGrid');
 
-// Render products
+// ========== BURGER MENU (OPTIMIZED) ==========
+
+// Toggle menu on burger click
+menuToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  menuToggle.classList.toggle('active');
+  navLinks.classList.toggle('open');
+});
+
+// Close menu when clicking a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    menuToggle.classList.remove('active');
+    navLinks.classList.remove('open');
+  });
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!menuToggle.contains(e.target) && !navLinks.contains(e.target) && navLinks.classList.contains('open')) {
+    menuToggle.classList.remove('active');
+    navLinks.classList.remove('open');
+  }
+});
+
+// Close menu on scroll
+window.addEventListener('scroll', () => {
+  if (navLinks.classList.contains('open')) {
+    menuToggle.classList.remove('active');
+    navLinks.classList.remove('open');
+  }
+});
+
+// ========== PRODUCTS ==========
+
 function renderProducts() {
   const popular = products.filter(p => p.popular);
   productsGrid.innerHTML = popular.map(p => `
@@ -69,7 +103,8 @@ function getCategoryName(cat) {
   return names[cat] || cat;
 }
 
-// Cart functions
+// ========== CART ==========
+
 function addToCart(id) {
   const product = products.find(p => p.id === id);
   const existing = cart.find(item => item.id === id);
@@ -123,19 +158,16 @@ function hideCart() {
   document.body.style.overflow = '';
 }
 
-// Event Listeners
-menuToggle.addEventListener('click', () => {
-  menuToggle.classList.toggle('active');
-  navLinks.classList.toggle('open');
+// ========== EVENT LISTENERS ==========
+
+cartBtn.addEventListener('click', showCart);
+closeCart.addEventListener('click', hideCart);
+
+cartModal.addEventListener('click', (e) => {
+  if (e.target === cartModal) hideCart();
 });
 
-document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    menuToggle.classList.remove('active');
-    navLinks.classList.remove('open');
-  });
-});
-
+// Navbar scroll effect
 window.addEventListener('scroll', () => {
   if (window.scrollY > 50) {
     navbar.classList.add('scrolled');
@@ -171,13 +203,6 @@ scrollTop.addEventListener('click', () => {
   window.scrollTo({top: 0, behavior: 'smooth'});
 });
 
-cartBtn.addEventListener('click', showCart);
-closeCart.addEventListener('click', hideCart);
-
-cartModal.addEventListener('click', (e) => {
-  if (e.target === cartModal) hideCart();
-});
-
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function(e) {
@@ -199,6 +224,6 @@ document.querySelectorAll('.category-card').forEach(card => {
   });
 });
 
-// Initialize
+// ========== INIT ==========
 renderProducts();
 console.log('Орхидея — Цветочный магазин. Сайт загружен.');

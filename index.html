@@ -1,1343 +1,206 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Момент — Бот знакомств в Telegram</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body {
-            overflow-x: hidden;
-            max-width: 100%;
-            width: 100%;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #140a14;
-            color: #fff;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            padding: 1rem 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            background: rgba(20, 10, 20, 0.6);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            transition: all 0.4s ease;
-            width: 100%;
-            max-width: 100vw;
-            box-sizing: border-box;
-        }
-        .navbar.scrolled {
-            background: rgba(20, 10, 20, 0.9);
-        }
-        .nav-logo {
-            font-weight: 800;
-            font-size: 1.3rem;
-            background: linear-gradient(135deg, #fff 0%, #ff6b9d 50%, #00d4ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2.5rem;
-            align-items: center;
-        }
-        .nav-links a {
-            color: rgba(255,255,255,0.6);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-        .nav-links a:hover {
-            color: #ff6b9d;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 1.5px;
-            background: linear-gradient(90deg, #ff2d6d, #00d4ff);
-            transition: width 0.3s ease;
-        }
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        .nav-cta {
-            padding: 0.6rem 1.4rem;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ff2d6d, #ff6b9d);
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: none;
-        }
-        .nav-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(255,45,109,0.4);
-        }
-
-        /* ===== BACKGROUND ORBS ===== */
-        /* ===== HERO ===== */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 8rem 1rem 4rem;
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .hero-glow {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw; height: 100vw;
-            max-width: 800px; max-height: 800px;
-            background: radial-gradient(circle, rgba(255,45,109,0.3) 0%, rgba(0,212,255,0.1) 40%, transparent 70%);
-            filter: blur(40px);
-            pointer-events: none;
-            z-index: 0;
-            animation: heroGlowPulse 8s ease-in-out infinite;
-        }
-        @keyframes heroGlowPulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        .hero-content { 
-            position: relative; 
-            z-index: 1; 
-            max-width: 850px; 
-            width: 100%;
-            padding: 0 0.5rem;
-            box-sizing: border-box;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255,45,109,0.1);
-            border: 1px solid rgba(255,107,157,0.2);
-            color: #ffb8d4;
-            padding: 0.6rem 1.2rem;
-            border-radius: 100px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 2.5rem;
-            animation: fadeInDown 0.8s ease;
-            backdrop-filter: blur(10px);
-            max-width: calc(100vw - 2rem);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .badge-dot {
-            width: 8px; height: 8px;
-            background: #ff2d6d;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(255,45,109,0.6);
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.3); }
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 10vw, 6rem);
-            font-weight: 900;
-            line-height: 1.05;
-            margin-bottom: 1.5rem;
-            color: #fff;
-            letter-spacing: -0.03em;
-            animation: fadeInUp 0.8s ease 0.2s both;
-            text-shadow: 0 0 80px rgba(255,45,109,0.4), 0 0 120px rgba(0,212,255,0.15);
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-        .hero p {
-            font-size: clamp(1rem, 3.5vw, 1.4rem);
-            color: rgba(255,184,212,0.7);
-            max-width: 600px;
-            margin: 0 auto 3rem;
-            animation: fadeInUp 0.8s ease 0.4s both;
-            font-weight: 400;
-            line-height: 1.7;
-            padding: 0 0.5rem;
-            word-break: break-word;
-        }
-
-        .cta-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 0.8s ease 0.6s both;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 1.1rem 2.2rem;
-            border-radius: 16px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            border: none;
-            position: relative;
-            overflow: hidden;
-            max-width: 100%;
-            box-sizing: border-box;
-            text-align: center;
-            justify-content: center;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
-            color: #fff;
-            box-shadow: 0 4px 30px rgba(255,45,109,0.3), 0 0 60px rgba(255,45,109,0.15);
-        }
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(255,45,109,0.5), 0 0 80px rgba(255,107,157,0.25), 0 0 120px rgba(255,143,184,0.1);
-        }
-        .btn-primary:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.04);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
-        }
-        .btn-secondary:hover {
-            background: rgba(255,45,109,0.1);
-            border-color: rgba(255,45,109,0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(255,45,109,0.15);
-        }
-
-        /* ===== STATS BAR ===== */
-        .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 4rem;
-            padding: 3rem 1rem;
-            position: relative;
-            z-index: 2;
-            flex-wrap: wrap;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        .stat-item { text-align: center; }
-        .stat-num {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-            background: linear-gradient(135deg, #ffb8d4 0%, #ff6b9d 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .stat-label { 
-            color: rgba(255,184,212,0.5); 
-            font-size: 0.9rem; 
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-
-        /* ===== SECTIONS ===== */
-        .section {
-            contain: layout style; 
-            padding: 7rem 1rem; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .section-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,107,157,0.15), transparent);
-            margin: 0 auto;
-            max-width: min(800px, calc(100vw - 2rem));
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: clamp(1.6rem, 6vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            color: #fff;
-            letter-spacing: -0.02em;
-            word-break: break-word;
-            padding: 0 0.5rem;
-        }
-        .section-subtitle {
-            text-align: center;
-            color: rgba(255,184,212,0.5);
-            font-size: clamp(0.9rem, 3vw, 1.15rem);
-            max-width: 550px;
-            margin: 0 auto 4rem;
-            font-weight: 400;
-            line-height: 1.7;
-            padding: 0 1rem;
-            word-break: break-word;
-        }
-
-        /* ===== FEATURE CARDS ===== */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-            gap: 1.5rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .feature-card {
-            will-change: transform;
-            transform: translateZ(0);
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 2.5rem;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,107,157,0.3), transparent);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .feature-card:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,107,157,0.2);
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-        }
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-        .feature-icon {
-            width: 56px; height: 56px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            background: rgba(255,45,109,0.1);
-            border: 1px solid rgba(255,107,157,0.15);
-        }
-        .feature-card h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #fff;
-        }
-        .feature-card p { 
-            color: rgba(255,184,212,0.5); 
-            font-size: 0.95rem; 
-            line-height: 1.7;
-        }
-
-        /* ===== STEPS ===== */
-        .steps {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .step {
-            will-change: transform;
-            transform: translateZ(0);
-            flex: 1;
-            min-width: 280px;
-            max-width: 340px;
-            text-align: center;
-            padding: 2.5rem;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 100%;
-        }
-        .step:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255,107,157,0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-        }
-        .step-num {
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            margin: 0 auto 1.5rem;
-            color: #fff;
-            box-shadow: 0 4px 20px rgba(255,45,109,0.3);
-        }
-        .step h3 { 
-            font-size: 1.15rem; 
-            margin-bottom: 0.75rem; 
-            color: #fff;
-            font-weight: 700;
-        }
-        .step p { 
-            color: rgba(255,184,212,0.5); 
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* ===== BADGES SHOWCASE ===== */
-        .badges-showcase {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .badge-item {
-            will-change: transform;
-            transform: translateZ(0);
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 2rem;
-            text-align: center;
-            min-width: 160px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .badge-item:hover { 
-            transform: scale(1.05) translateY(-4px); 
-            border-color: rgba(255,45,109,0.25);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .badge-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
-        .badge-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
-        .badge-rarity {
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-        }
-        .r-common { color: rgba(255,184,212,0.5); }
-        .r-rare { color: #ff8fb8; }
-        .r-epic { color: #ffb8d4; }
-        .r-legendary { color: #ffe0ec; }
-
-        /* ===== LEVELS CARDS ===== */
-        .level-card {
-            will-change: transform;
-            transform: translateZ(0);
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 2.5rem;
-            text-align: center;
-            flex: 1;
-            min-width: 200px;
-            max-width: 220px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 100%;
-        }
-        .level-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255,107,157,0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-        }
-        .level-points {
-            color: #ff4d85;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin: 0.75rem 0;
-        }
-
-        /* ===== POINTS INFO BOX ===== */
-        .points-box {
-            max-width: 750px;
-            margin: 3rem auto 0;
-            background: rgba(255,45,109,0.05);
-            border: 1px solid rgba(255,45,109,0.12);
-            border-radius: 24px;
-            padding: 2.5rem;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .points-box h3 {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #fff;
-            font-size: 1.3rem;
-        }
-        .points-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
-            gap: 1.5rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .point-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .point-item span { font-size: 1.5rem; }
-        .point-item div div:first-child { font-weight: 600; color: #fff; }
-        .point-item div div:last-child { color: rgba(255,184,212,0.5); font-size: 0.85rem; }
-        .points-warning {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            text-align: center;
-            color: rgba(255,184,212,0.4);
-            font-size: 0.9rem;
-        }
-
-        /* ===== SCREENSHOTS ===== */
-        .screenshots {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 3rem;
-        }
-        .phone-mockup {
-            will-change: transform;
-            transform: translateZ(0);
-            width: 280px;
-            max-width: calc(100vw - 2rem);
-            background: rgba(255,255,255,0.04);
-            border-radius: 32px;
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 16px 50px rgba(0,0,0,0.3);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            flex-shrink: 0;
-        }
-        .phone-mockup:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .phone-screen {
-            background: rgba(10,5,24,0.6);
-            border-radius: 24px;
-            padding: 1.5rem;
-            min-height: 420px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .chat-bubble {
-            background: rgba(255,45,109,0.15);
-            border-radius: 16px 16px 4px 16px;
-            padding: 0.75rem 1rem;
-            font-size: 0.85rem;
-            max-width: 85%;
-            align-self: flex-end;
-            color: #fff;
-            border: 1px solid rgba(255,45,109,0.1);
-        }
-        .chat-bubble.in {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px 16px 16px 4px;
-            align-self: flex-start;
-            color: rgba(255,255,255,0.8);
-        }
-        .profile-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 1.25rem;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .profile-avatar {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff2d6d, #ff4d85, #00d4ff);
-            margin: 0 auto 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 20px rgba(255,45,109,0.3);
-        }
-        .compat-bar {
-            height: 6px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 3px;
-            margin-top: 0.75rem;
-            overflow: hidden;
-        }
-        .compat-fill {
-            height: 100%;
-            width: 87%;
-            background: linear-gradient(90deg, #ff2d6d, #ff4d85, #00d4ff);
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(255,45,109,0.3);
-        }
-
-        /* ===== FAQ ===== */
-        .faq-list { max-width: 750px; margin: 0 auto; width: 100%; box-sizing: border-box; }
-        .faq-item {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.3s ease;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        .faq-item:hover {
-            border-color: rgba(255,107,157,0.15);
-        }
-        .faq-question {
-            padding: 1.5rem 1.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-            color: #fff;
-            font-size: 1rem;
-        }
-        .faq-question:hover { 
-            background: rgba(255,45,109,0.04); 
-        }
-        .faq-answer {
-            padding: 0 1.75rem 1.5rem;
-            color: rgba(255,184,212,0.5);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            display: none;
-        }
-        .faq-item.active .faq-answer { display: block; }
-        .faq-item.active .faq-toggle { transform: rotate(180deg); }
-        .faq-toggle { 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            font-size: 0.8rem;
-            color: rgba(255,184,212,0.5);
-        }
-
-        /* ===== CTA SECTION ===== */
-        .cta-section {
-            text-align: center;
-            padding: 7rem 1rem;
-            position: relative;
-            z-index: 2;
-            overflow: hidden;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(255,45,109,0.15) 0%, rgba(0,212,255,0.08) 40%, transparent 60%);
-            filter: blur(30px);
-            pointer-events: none;
-            
-        }
-        
-        .cta-section h2 {
-            font-size: clamp(1.6rem, 6vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            color: #fff;
-            position: relative;
-            z-index: 1;
-            letter-spacing: -0.02em;
-            word-break: break-word;
-            padding: 0 0.5rem;
-        }
-        .cta-section p {
-            color: rgba(255,184,212,0.5);
-            font-size: clamp(0.9rem, 3vw, 1.15rem);
-            max-width: 500px;
-            margin: 0 auto 2.5rem;
-            position: relative;
-            z-index: 1;
-            line-height: 1.7;
-            padding: 0 1rem;
-            word-break: break-word;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: rgba(255,184,212,0.3);
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 2;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        footer a { 
-            color: rgba(255,184,212,0.6); 
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        footer a:hover { color: #ff6b9d; }
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            max-width: 100%;
-            padding: 0 0.5rem;
-        }
-        .footer-links a {
-            color: rgba(255,184,212,0.4);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.3s ease;
-        }
-        .footer-links a:hover { color: #ff6b9d; }
-        .footer-legal {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            max-width: 100%;
-            padding: 0 0.5rem;
-        }
-        .footer-legal a {
-            color: rgba(255,184,212,0.5);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 0.3s ease;
-            border-bottom: 1px solid rgba(255,184,212,0.1);
-        }
-        .footer-legal a:hover {
-            color: #ff6b9d;
-            border-bottom-color: rgba(255,107,157,0.4);
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Scroll reveal */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .navbar { padding: 0.8rem 1rem; }
-            .nav-links { display: none; }
-            .stats-bar { gap: 1.5rem; padding: 2rem 0.5rem; }
-            .stat-num { font-size: 1.8rem; }
-            .stat-label { font-size: 0.8rem; }
-            .steps { flex-direction: column; align-items: center; gap: 1rem; }
-            .step {
-                will-change: transform;
-                transform: translateZ(0); 
-                max-width: 100%; 
-                min-width: auto; 
-                width: 100%;
-                padding: 1.5rem;
-            }
-            .section {
-                contain: layout style; 
-                padding: 4rem 0.75rem; 
-            }
-            .features-grid { 
-                grid-template-columns: 1fr; 
-                gap: 1rem;
-            }
-            .hero { padding: 7rem 0.5rem 3rem; }
-            .hero h1 { font-size: clamp(1.8rem, 12vw, 3rem); }
-            .hero p { font-size: clamp(0.9rem, 4vw, 1.1rem); }
-            .cta-group { 
-                flex-direction: column; 
-                align-items: center; 
-                width: 100%; 
-                gap: 0.75rem;
-            }
-            .btn { 
-                width: 100%; 
-                max-width: 280px; 
-                justify-content: center;
-                padding: 0.9rem 1.5rem;
-                font-size: 0.95rem;
-            }
-            .badges-showcase { gap: 1rem; }
-            .badge-item { min-width: 130px; padding: 1.25rem 0.75rem; }
-            .level-card { 
-                min-width: 160px; 
-                max-width: 100%; 
-                width: 100%;
-                padding: 1.5rem;
-            }
-            .points-box { padding: 1.25rem; }
-            .points-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .phone-mockup { 
-                width: 100%; 
-                max-width: 260px; 
-                padding: 8px;
-            }
-            .screenshots { gap: 1rem; padding: 0 0.5rem; }
-            .faq-question { padding: 1rem; font-size: 0.9rem; }
-            .faq-answer { padding: 0 1rem 1rem; font-size: 0.85rem; }
-            .stat-item { min-width: 100px; }
-            .section-title { font-size: clamp(1.5rem, 7vw, 2.2rem); }
-            .section-subtitle { font-size: 0.9rem; padding: 0 0.5rem; }
-            .cta-section { padding: 4rem 0.5rem; }
-            .cta-section h2 { font-size: clamp(1.5rem, 7vw, 2.2rem); }
-            .cta-section p { font-size: 0.9rem; padding: 0 0.5rem; }
-            .footer-links { gap: 0.75rem; }
-            .footer-legal { gap: 0.75rem; }
-            .feature-card { padding: 1.5rem; }
-            .feature-icon { width: 48px; height: 48px; font-size: 1.25rem; }
-            .feature-card h3 { font-size: 1.05rem; }
-            .feature-card p { font-size: 0.85rem; }
-            .step-num { width: 48px; height: 48px; font-size: 1.1rem; }
-            .step h3 { font-size: 1rem; }
-            .step p { font-size: 0.85rem; }
-            .level-points { font-size: 1rem; }
-            .points-box h3 { font-size: 1.1rem; }
-            .badge { font-size: 0.75rem; padding: 0.5rem 1rem; }
-            .nav-logo { font-size: 1.1rem; }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 { font-size: clamp(1.5rem, 14vw, 2.2rem); }
-            .hero p { font-size: 0.85rem; }
-            .badge { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
-            .stat-num { font-size: 1.6rem; }
-            .stat-label { font-size: 0.75rem; }
-            .feature-card { padding: 1.25rem; }
-            .feature-icon { width: 44px; height: 44px; font-size: 1.1rem; }
-            .feature-card h3 { font-size: 0.95rem; }
-            .feature-card p { font-size: 0.8rem; }
-            .step { padding: 1.25rem; }
-            .step-num { width: 44px; height: 44px; font-size: 1rem; }
-            .step h3 { font-size: 0.95rem; }
-            .step p { font-size: 0.8rem; }
-            .level-card { padding: 1.25rem; }
-            .level-points { font-size: 0.9rem; }
-            .points-box { padding: 1rem; }
-            .points-box h3 { font-size: 1rem; }
-            .faq-question { font-size: 0.85rem; padding: 0.875rem; }
-            .faq-answer { font-size: 0.8rem; }
-            .btn { padding: 0.8rem 1.2rem; font-size: 0.9rem; }
-            .section-title { font-size: clamp(1.3rem, 10vw, 1.8rem); }
-            .cta-section h2 { font-size: clamp(1.3rem, 10vw, 1.8rem); }
-            .phone-mockup { max-width: 240px; }
-            .footer-links a { font-size: 0.8rem; }
-            .footer-legal a { font-size: 0.75rem; }
-            .nav-logo { font-size: 1rem; }
-        }
-
-        /* Prevent iOS zoom on all inputs and buttons */
-        input, textarea, select, button {
-            font-size: 16px;
-        }
-
-        /* Ensure all images and media are responsive */
-        img, video, canvas, svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Prevent text overflow */
-        p, h1, h2, h3, h4, h5, h6, li {
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Орхидея — Цветочный магазин</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Background Effects -->
-
-
-
-
-        
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-logo">Момент</div>
-        <div class="nav-links">
-            <a href="#features">Возможности</a>
-            <a href="#how-it-works">Как работает</a>
-            <a href="#levels">Уровни</a>
-            <a href="#faq">FAQ</a>
-            <a href="https://t.me/iskraa777_bot" class="nav-cta" target="_blank">Запустить</a>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-glow"></div>
-        <div class="hero-content">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                Бот знакомств в Telegram
-            </div>
-            <h1>Момент</h1>
-            <p>Знакомства, где важнее не только фото. Считаем совместимость по интересам, предлагаем темы для разговора.</p>
-            <div class="cta-group">
-                <a href="https://t.me/iskraa777_bot" class="btn btn-primary" target="_blank">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-16.5 6.498a2.25 2.25 0 0 0 .111 4.236l3.888 1.354a.75.75 0 0 0 .888-.296l2.208-3.622a.75.75 0 0 1 1.043-.233l3.62 2.088a.75.75 0 0 0 .888-.088l6.498-6.498a2.25 2.25 0 0 0-1.636-3.674z"/></svg>
-                    Запустить бота
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats -->
-    <div class="stats-bar">
-        <div class="stat-item reveal">
-            <div class="stat-num">15+</div>
-            <div class="stat-label">Артефактов</div>
-        </div>
-        <div class="stat-item reveal">
-            <div class="stat-num">20</div>
-            <div class="stat-label">Интересов</div>
-        </div>
-        <div class="stat-item reveal">
-            <div class="stat-num">100%</div>
-            <div class="stat-label">Анонимность</div>
-        </div>
-        <div class="stat-item reveal">
-            <div class="stat-num">24/7</div>
-            <div class="stat-label">Работает</div>
-        </div>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" stroke="#C2187A" stroke-width="1.5"/><ellipse cx="30" cy="28" rx="5" ry="7" fill="#E674B9" opacity="0.6"/><ellipse cx="22" cy="32" rx="4" ry="6" fill="#D97FB2" opacity="0.5" transform="rotate(-20 22 32)"/><ellipse cx="38" cy="32" rx="4" ry="6" fill="#D97FB2" opacity="0.5" transform="rotate(20 38 32)"/></svg>
+      </div>
+      <span class="logo-text">Орхидея</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="active">Главная</a></li>
+      <li><a href="#catalog">Каталог</a></li>
+      <li><a href="#about">О нас</a></li>
+      <li><a href="#delivery">Доставка</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="cart-btn" id="cartBtn">🛒 <span class="cart-count" id="cartCount">0</span></button>
+      <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
     </div>
+  </div>
+</nav>
 
-    <div class="section-divider"></div>
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-orchid"></div>
+    <div class="hero-orchid"></div>
+    <div class="floating-petal"></div>
+    <div class="floating-petal"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span> Цветочный магазин в Барановичах</div>
+    <h1 class="hero-title"><span class="title-line">Свежие цветы</span><span class="title-line accent">с душой</span></h1>
+    <p class="hero-subtitle">Букеты, композиции, подарки — с доставкой по городу Барановичи.</p>
+    <div class="hero-buttons">
+      <a href="#catalog" class="btn btn-primary">Смотреть каталог →</a>
+      <a href="https://wa.me/375000000000" target="_blank" class="btn btn-outline">💬 WhatsApp</a>
+    </div>
+    <div class="hero-features">
+      <div class="feature">🌸 Свежие цветы</div>
+      <div class="feature">🚚 Доставка по городу</div>
+      <div class="feature">🕐 Ежедневно 9:00–20:00</div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <div class="hero-flower-circle">
+      <div class="flower-ring"></div>
+      <div class="flower-ring"></div>
+      <div class="center-flower">
+        <svg viewBox="0 0 200 200" fill="none">
+          <ellipse cx="100" cy="70" rx="25" ry="35" fill="#E674B9" opacity="0.9"/>
+          <ellipse cx="70" cy="90" rx="20" ry="30" fill="#D97FB2" opacity="0.85" transform="rotate(-30 70 90)"/>
+          <ellipse cx="130" cy="90" rx="20" ry="30" fill="#D97FB2" opacity="0.85" transform="rotate(30 130 90)"/>
+          <ellipse cx="85" cy="120" rx="18" ry="28" fill="#C2187A" opacity="0.8" transform="rotate(-15 85 120)"/>
+          <ellipse cx="115" cy="120" rx="18" ry="28" fill="#C2187A" opacity="0.8" transform="rotate(15 115 120)"/>
+          <ellipse cx="100" cy="105" rx="12" ry="18" fill="#F5E8F2" opacity="0.9"/>
+          <ellipse cx="100" cy="100" rx="6" ry="10" fill="#8B0F5A" opacity="0.7"/>
+          <path d="M100 135 Q100 160 95 180" stroke="#4A7C59" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Features -->
-    <section class="section" id="features">
-        <h2 class="section-title reveal">Чем Момент отличается</h2>
-        <p class="section-subtitle reveal">Не просто свайпы — умный подбор и живое общение</p>
-        <div class="features-grid">
-            <div class="feature-card reveal">
-                <div class="feature-icon">💞</div>
-                <h3>Совместимость по интересам</h3>
-                <p>Выбери до 5 интересов из 20 категорий. Бот посчитает процент совпадения и покажет прогресс-бар прямо в анкете.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">🎭</div>
-                <h3>Свидание вслепую</h3>
-                <p>Анонимный чат без фото и имён. Понравился разговор — откройтесь оба и получите мэтч. Нет — просто завершите сессию.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">💬</div>
-                <h3>Айсбрейкеры</h3>
-                <p>При мэтче бот предлагает первую фразу, чтобы не было неловкой паузы. Никаких «Привет, как дела?»</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">🏆</div>
-                <h3>Система Артефактов</h3>
-                <p>15 коллекционных значков за активность: от «Первой симпатии» до «Легенды Момента». Показывай их в анкете.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">✅</div>
-                <h3>Верификация</h3>
-                <p>Отправь кружочек с жестом — админ проверит, что ты реальный человек. Верифицированные анкеты выделяются галочкой.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">💞</div>
-                <h3>Уровни отношений</h3>
-                <p>После мэтча ваши сообщения накапливают очки. От «Общения» до «Пары» — 5 уровней с прогресс-баром. Общайтесь чаще, чтобы расти вместе!</p>
-            </div>
+<section class="categories" id="catalog">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Каталог</span>
+      <h2 class="section-title">Что мы предлагаем</h2>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card"><div class="category-image">🌹</div><div class="category-info"><h3>Букеты</h3><p>Свежие букеты из роз, тюльпанов, орхидей</p></div></div>
+      <div class="category-card"><div class="category-image">🎁</div><div class="category-info"><h3>Композиции</h3><p>В корзинах, коробках и вазах</p></div></div>
+      <div class="category-card"><div class="category-image">🎈</div><div class="category-info"><h3>Шары</h3><p>Гелевые и фольгированные шары</p></div></div>
+      <div class="category-card"><div class="category-image">🧸</div><div class="category-info"><h3>Мягкие игрушки</h3><p>Плюшевые мишки и зайки</p></div></div>
+      <div class="category-card"><div class="category-image">💌</div><div class="category-info"><h3>Открытки</h3><p>Праздничные открытки</p></div></div>
+      <div class="category-card"><div class="category-image">🎀</div><div class="category-info"><h3>Букеты из лент</h3><p>Ручная работа из атласных лент</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="featured">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Популярное</span>
+      <h2 class="section-title">Хиты продаж</h2>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-image-frame">
+          <div class="about-image-main">🌸</div>
+          <div class="about-badge"><span class="badge-number">5+</span><span class="badge-text">лет опыта</span></div>
         </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <!-- How it works -->
-    <section class="section" id="how-it-works">
-        <h2 class="section-title reveal">Как это работает</h2>
-        <p class="section-subtitle reveal">От регистрации до первого мэтча — за 3 минуты</p>
-        <div class="steps">
-            <div class="step reveal">
-                <div class="step-num">1</div>
-                <h3>Создай анкету</h3>
-                <p>Имя, возраст, город, фото и до 5 интересов. Заполни анкету полностью — это повышает шансы.</p>
-            </div>
-            <div class="step reveal">
-                <div class="step-num">2</div>
-                <h3>Листай ленту</h3>
-                <p>Смотри анкеты с процентом совместимости. Лайкай, дизлайкай или отправляй лайк с сообщением.</p>
-            </div>
-            <div class="step reveal">
-                <div class="step-num">3</div>
-                <h3>Общайся</h3>
-                <p>Взаимный лайк = мэтч. Получи контакт собеседника и первую фразу от бота. Или попробуй «Свидание вслепую».</p>
-            </div>
+      </div>
+      <div class="about-content">
+        <span class="section-label">О нас</span>
+        <h2 class="section-title">Магазин цветов «Орхидея»</h2>
+        <p class="about-text">Мы — цветочный магазин в городе Барановичи. Создаем уникальные композиции из свежих цветов.</p>
+        <div class="about-stats">
+          <div class="stat"><span class="stat-number">500+</span><span class="stat-label">Клиентов</span></div>
+          <div class="stat"><span class="stat-number">100+</span><span class="stat-label">Букетов</span></div>
+          <div class="stat"><span class="stat-number">24/7</span><span class="stat-label">Заказы</span></div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <div class="section-divider"></div>
+<section class="delivery" id="delivery">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Доставка</span>
+      <h2 class="section-title">Как мы работаем</h2>
+    </div>
+    <div class="delivery-steps">
+      <div class="step"><div class="step-number">01</div><h3>Выберите букет</h3><p>Просмотрите каталог или напишите нам</p></div>
+      <div class="step"><div class="step-number">02</div><h3>Оформите заказ</h3><p>Через WhatsApp или Instagram</p></div>
+      <div class="step"><div class="step-number">03</div><h3>Доставка</h3><p>По Барановичам в удобное время</p></div>
+      <div class="step"><div class="step-number">04</div><h3>Радость</h3><p>Получатель наслаждается букетом</p></div>
+    </div>
+  </div>
+</section>
 
-    <!-- Badges -->
-    <section class="section">
-        <h2 class="section-title reveal">Система Артефактов</h2>
-        <p class="section-subtitle reveal">Собирай значки за активность и показывай их в анкете</p>
-        <div class="badges-showcase reveal">
-            <div class="badge-item">
-                <div class="badge-emoji">💝</div>
-                <div class="badge-name">Первая симпатия</div>
-                <div class="badge-rarity r-common">⚪ Обычный</div>
-            </div>
-            <div class="badge-item">
-                <div class="badge-emoji">📅</div>
-                <div class="badge-name">Неделя в огне</div>
-                <div class="badge-rarity r-rare">🔵 Редкий</div>
-            </div>
-            <div class="badge-item">
-                <div class="badge-emoji">⭐</div>
-                <div class="badge-name">Звезда</div>
-                <div class="badge-rarity r-epic">🟣 Эпический</div>
-            </div>
-            <div class="badge-item">
-                <div class="badge-emoji">👑</div>
-                <div class="badge-name">Легенда Момента</div>
-                <div class="badge-rarity r-legendary">🟡 Легендарный</div>
-            </div>
+<section class="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Отзывы</span>
+      <h2 class="section-title">Что говорят клиенты</h2>
+    </div>
+    <div class="testimonials-slider" id="testimonialsSlider">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">«Заказывала букет на день рождения мамы. Цветы были невероятно свежими!»</p>
+        <div class="testimonial-author"><div class="author-avatar">А</div><div class="author-info"><span class="author-name">Анна К.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contacts" id="contacts">
+  <div class="container">
+    <div class="contacts-grid">
+      <div class="contacts-info">
+        <span class="section-label">Контакты</span>
+        <h2 class="section-title">Свяжитесь с нами</h2>
+        <div class="contact-items">
+          <div class="contact-item">📍 <div class="contact-details"><span class="contact-label">Адрес</span><span class="contact-value">г. Барановичи, ул. Царюка 18</span></div></div>
+          <div class="contact-item">📞 <div class="contact-details"><span class="contact-label">Телефон</span><a href="tel:+375000000000" class="contact-value">+375 (00) 000-00-00</a></div></div>
+          <div class="contact-item">✉️ <div class="contact-details"><span class="contact-label">Email</span><a href="mailto:orkhideya2026@mail.ru" class="contact-value">orkhideya2026@mail.ru</a></div></div>
+          <div class="contact-item">🕐 <div class="contact-details"><span class="contact-label">Режим работы</span><span class="contact-value">Ежедневно 9:00 – 20:00</span></div></div>
         </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <!-- Уровни отношений -->
-    <section class="section" id="levels">
-        <h2 class="section-title reveal">💞 Уровни отношений</h2>
-        <p class="section-subtitle reveal">После мэтча каждое сообщение приближает вас к новому уровню. Общайтесь регулярно — получайте бонусы за стрик!</p>
-
-        <div class="steps" style="margin-top: 3rem;">
-            <div class="level-card reveal">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💛</div>
-                <h3>Общение</h3>
-                <div class="level-points">0 — 9 очков</div>
-                <p>Только что мэтчнулись. Начните диалог — каждое сообщение +1 очко.</p>
-            </div>
-            <div class="level-card reveal">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧡</div>
-                <h3>Симпатия</h3>
-                <div class="level-points">10 — 29 очков</div>
-                <p>Вы уже знакомы. Бонус +5 за активность обоих в течение 24 часов.</p>
-            </div>
-            <div class="level-card reveal">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">❤️</div>
-                <h3>Интерес</h3>
-                <div class="level-points">30 — 59 очков</div>
-                <p>Бонус +10 за стрик из 2 дней подряд. Не пропускайте общение!</p>
-            </div>
-            <div class="level-card reveal">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💖</div>
-                <h3>Близость</h3>
-                <div class="level-points">60 — 99 очков</div>
-                <p>Бонус +20 за стрик 5 дней. Максимум 20 очков в сутки на пару.</p>
-            </div>
-            <div class="level-card reveal">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💞</div>
-                <h3>Пара</h3>
-                <div class="level-points">100+ очков</div>
-                <p>Максимальный уровень! Вы настоящая пара в Искре</p>
-            </div>
+        <div class="social-links">
+          <a href="https://www.instagram.com/orkhideya2026" target="_blank" class="social-link">📷 Instagram</a>
+          <a href="https://wa.me/375000000000" target="_blank" class="social-link">💬 WhatsApp</a>
         </div>
+      </div>
+      <div class="contacts-map">
+        <div class="map-placeholder">📍<p>г. Барановичи, ул. Царюка 18</p><a href="https://yandex.by/maps" target="_blank" class="btn btn-sm">Открыть на карте</a></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="points-box reveal">
-            <h3>⚡ Как начисляются очки</h3>
-            <div class="points-grid">
-                <div class="point-item">
-                    <span>💬</span>
-                    <div>
-                        <div>+1 за сообщение</div>
-                        <div>Не чаще 1 раза в 2 минуты</div>
-                    </div>
-                </div>
-                <div class="point-item">
-                    <span>🔥</span>
-                    <div>
-                        <div>+5 активность 24ч</div>
-                        <div>Оба писали за сутки</div>
-                    </div>
-                </div>
-                <div class="point-item">
-                    <span>📅</span>
-                    <div>
-                        <div>+10 стрик 2 дня</div>
-                        <div>Общались 2 дня подряд</div>
-                    </div>
-                </div>
-                <div class="point-item">
-                    <span>🏆</span>
-                    <div>
-                        <div>+20 стрик 5 дней</div>
-                        <div>Общались 5 дней подряд</div>
-                    </div>
-                </div>
-            </div>
-            <div class="points-warning">
-                ⚠️ Тишина 2+ дня: −10 очков. Тишина 5+ дней: −25 очков. Лимит: 20 очков в сутки.
-            </div>
-        </div>
-    </section>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo"><span class="logo-text">🌸 Орхидея</span></a>
+        <p class="footer-desc">Цветочный магазин в Барановичи. Свежие цветы с доставкой.</p>
+      </div>
+      <div class="footer-links"><h4>Каталог</h4><ul><li><a href="#catalog">Букеты</a></li><li><a href="#catalog">Композиции</a></li><li><a href="#catalog">Шары</a></li></ul></div>
+      <div class="footer-links"><h4>Информация</h4><ul><li><a href="#about">О нас</a></li><li><a href="#delivery">Доставка</a></li><li><a href="#contacts">Контакты</a></li></ul></div>
+      <div class="footer-contact"><h4>Контакты</h4><p>г. Барановичи, ул. Царюка 18</p><p>Ежедневно 9:00 – 20:00</p><a href="tel:+375000000000">+375 (00) 000-00-00</a></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 Орхидея. Все права защищены.</p></div>
+  </div>
+</footer>
 
-    <div class="section-divider"></div>
+<div class="modal-overlay" id="cartModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Корзина</h3><button class="modal-close" id="closeCart">✕</button></div>
+    <div class="modal-body"><div class="cart-empty" id="cartEmpty"><p>Ваша корзина пуста</p><a href="#catalog" class="btn">Перейти в каталог</a></div><div class="cart-items" id="cartItems"></div></div>
+    <div class="modal-footer" id="cartFooter" style="display:none;"><div class="cart-total"><span>Итого:</span><span class="total-price" id="totalPrice">0 BYN</span></div><a href="https://wa.me/375000000000" target="_blank" class="btn btn-primary">Оформить в WhatsApp</a></div>
+  </div>
+</div>
 
-    <!-- Interface Preview -->
-    <section class="section">
-        <h2 class="section-title reveal">Интерфейс бота</h2>
-        <p class="section-subtitle reveal">Просто, понятно, красиво</p>
-        <div class="screenshots reveal">
-            <div class="phone-mockup">
-                <div class="phone-screen">
-                    <div class="profile-card">
-                        <div class="profile-avatar">👤</div>
-                        <div style="font-weight:700; color:#fff;">Анна, 24 👩</div>
-                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;">📍 Москва</div>
-                        <div style="margin-top:0.5rem;font-size:0.8rem; color:rgba(255,184,212,0.6);">🏷 🎬 Кино 🎵 Музыка ☕ Кофе</div>
-                        <div style="margin-top:0.75rem;font-size:0.85rem; color:#fff;">💞 Совместимость: <b>87%</b></div>
-                        <div class="compat-bar"><div class="compat-fill"></div></div>
-                    </div>
-                    <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:auto;">
-                        <span style="background:rgba(255,45,109,0.15);padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; color:#fff; border:1px solid rgba(255,45,109,0.1);">❤️ Лайк</span>
-                        <span style="background:rgba(255,255,255,0.05);padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.06);">💬 Сообщение</span>
-                    </div>
-                </div>
-            </div>
-            <div class="phone-mockup">
-                <div class="phone-screen">
-                    <div style="text-align:center;margin-bottom:1rem;">
-                        <div style="font-size:1.2rem;font-weight:700; color:#fff;">🎭 Свидание вслепую</div>
-                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;margin-top:0.25rem;">Собеседник найден!</div>
-                    </div>
-                    <div class="chat-bubble in">Привет! Какой твой любимый фильм? 🎬</div>
-                    <div class="chat-bubble">О, сложный вопрос! Наверное, «Начало» Нолана</div>
-                    <div class="chat-bubble in">Отличный выбор! У нас точно найдётся о чём поговорить</div>
-                    <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:auto;">
-                        <span style="background:rgba(0,212,255,0.1);color:#00d4ff;padding:0.6rem 1.2rem;border-radius:12px;font-size:0.85rem; border:1px solid rgba(0,212,255,0.15);">🎭 Открыться</span>
-                    </div>
-                </div>
-            </div>
-            <div class="phone-mockup">
-                <div class="phone-screen">
-                    <div style="text-align:center;margin-bottom:1rem;">
-                        <div style="font-size:1.1rem;font-weight:700; color:#fff;">🏆 Твои Артефакты</div>
-                        <div style="color:rgba(255,184,212,0.5);font-size:0.8rem;">5 / 15 получено</div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                        <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
-                            <span style="font-size:1.5rem;">💝</span>
-                            <div>
-                                <div style="font-weight:600;font-size:0.85rem; color:#fff;">Первая симпатия</div>
-                                <div style="color:rgba(255,184,212,0.4);font-size:0.75rem;">⚪ Обычный</div>
-                            </div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
-                            <span style="font-size:1.5rem;">📸</span>
-                            <div>
-                                <div style="font-weight:600;font-size:0.85rem; color:#fff;">Фотограф</div>
-                                <div style="color:#00d4ff;font-size:0.75rem;">🔵 Редкий</div>
-                            </div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.05);padding:0.75rem;border-radius:12px;display:flex;align-items:center;gap:0.75rem; border:1px solid rgba(255,255,255,0.06);">
-                            <span style="font-size:1.5rem;">⭐</span>
-                            <div>
-                                <div style="font-weight:600;font-size:0.85rem; color:#fff;">Звезда</div>
-                                <div style="color:#00d4ff;font-size:0.75rem;">🟣 Эпический</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <!-- FAQ -->
-    <section class="section" id="faq">
-        <h2 class="section-title reveal">Частые вопросы</h2>
-        <div class="faq-list reveal">
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Бесплатный ли бот?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">Да, базовый функционал полностью бесплатный. Листай анкеты, ставь лайки, общайся в анонимном чате — всё это доступно сразу после регистрации.</div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Как работает совместимость?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">Алгоритм сравнивает ваши интересы по индексу Жаккара и добавляет бонус за 3+ совпадения. Результат — процент от 35 до 99%, который виден в каждой анкете.</div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Что такое «Свидание вслепую»?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">Это анонимный чат, где вы общаетесь без фото и имён. Если оба нажмёте «Открыться» — увидите анкеты друг друга и попадёте в мэтчи. Если нет — просто завершите сессию.</div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Безопасно ли здесь?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">Есть система жалоб: после 5 жалоб на пользователя он автоматически банится. Также работает верификация через видео-жест, чтобы отсеять фейки.</div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Как получить Артефакты?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">Артефакты выдаются автоматически за достижения: первый лайк, первый мэтч, 7 дней активности подряд, 50 мэтчей и т.д. Всего 15 значков разной редкости.</div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-                    Что такое уровни отношений?
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">После мэтча вы и ваш партнёр начинаете накапливать очки за сообщения. 5 уровней: от 💛 Симпатии (0 очков) до 💞 Пары (100+). Бонусы за ежедневное общение, штрафы за тишину. Максимум 20 очков в сутки. Уровень показывается в списке мэтчей по кнопке «💞 Уровень отношений».</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta-section">
-        <h2 class="reveal">Твой момент для знакомства</h2>
-        <p class="reveal">Запусти бота прямо сейчас — регистрация займёт минуту</p>
-        <div class="cta-group reveal">
-            <a href="https://t.me/iskraa777_bot" class="btn btn-primary" target="_blank">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-16.5 6.498a2.25 2.25 0 0 0 .111 4.236l3.888 1.354a.75.75 0 0 0 .888-.296l2.208-3.622a.75.75 0 0 1 1.043-.233l3.62 2.088a.75.75 0 0 0 .888-.088l6.498-6.498a2.25 2.25 0 0 0-1.636-3.674z"/></svg>
-                Запустить в Telegram
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-links">
-            <a href="#features">Возможности</a>
-            <a href="#how-it-works">Как работает</a>
-            <a href="#levels">Уровни</a>
-            <a href="#faq">FAQ</a>
-        </div>
-        <div class="footer-legal">
-            <a href="https://momento777.vercel.app/privacy.html">Политика конфиденциальности</a>
-            <a href="https://momento777.vercel.app/terms.html">Пользовательское соглашение</a>
-            <a href="https://momento777.vercel.app/community.html">Правила сообщества</a>
-        </div>
-        <p>Момент — Бот знакомств в Telegram</p>
-        <p style="margin-top:0.5rem;">Не аффилирован с Telegram. <a href="https://t.me/iskraa777_bot" target="_blank">@iskra_dating_bot</a></p>
-    </footer>
-
-    <script>
-        // Scroll reveal
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    </script>
+<div class="scroll-top" id="scrollTop">↑</div>
+<script src="script.js"></script>
 </body>
-    </html>
+</html>

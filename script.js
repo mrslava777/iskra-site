@@ -1,5 +1,21 @@
-// Product data
-const products = [
+// ===================== ADMIN DATA =====================
+// Загружаем данные из localStorage (если админка сохранила)
+function loadAdminData() {
+  const saved = localStorage.getItem('orchidAdminData');
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch(e) {
+      console.error('Ошибка загрузки admin данных', e);
+    }
+  }
+  return null;
+}
+
+let adminData = loadAdminData();
+
+// ===================== DEFAULT PRODUCT DATA =====================
+const defaultProducts = [
   {id: 1, name: 'Букет из 15 роз', category: 'bouquets', price: 85, popular: true, desc: 'Нежный букет из 15 свежих роз'},
   {id: 2, name: 'Орхидея в горшке', category: 'compositions', price: 65, popular: true, desc: 'Живая орхидея фаленопсис'},
   {id: 3, name: 'Композиция в коробке', category: 'compositions', price: 120, popular: true, desc: 'Розы и эустома в коробке'},
@@ -9,6 +25,148 @@ const products = [
   {id: 7, name: 'Открытка', category: 'cards', price: 12, popular: false, desc: 'Ручная работа'},
   {id: 8, name: '25 тюльпанов', category: 'bouquets', price: 110, popular: false, desc: 'Весенний букет'}
 ];
+
+// Получаем актуальные продукты (из админки или дефолт)
+function getProducts() {
+  if (adminData && adminData.products) {
+    return adminData.products;
+  }
+  return defaultProducts;
+}
+
+const products = getProducts();
+
+// ===================== APPLY ADMIN SETTINGS =====================
+function applyAdminSettings() {
+  if (!adminData) return;
+
+  // Hero section
+  if (adminData.site) {
+    const s = adminData.site;
+    const titleEl = document.querySelector('.hero-title');
+    if (titleEl && s.heroTitle1 && s.heroTitle2) {
+      titleEl.innerHTML = `<span class="title-line">${escapeHtml(s.heroTitle1)}</span><span class="title-line accent">${escapeHtml(s.heroTitle2)}</span>`;
+    }
+
+    const subtitleEl = document.querySelector('.hero-subtitle');
+    if (subtitleEl && s.heroSubtitle) subtitleEl.textContent = s.heroSubtitle;
+
+    const badgeEl = document.querySelector('.hero-badge');
+    if (badgeEl && s.heroBadge) {
+      badgeEl.innerHTML = `<span class="badge-dot"></span> ${escapeHtml(s.heroBadge)}`;
+    }
+
+    const btnEl = document.querySelector('.hero-buttons .btn-primary');
+    if (btnEl && s.heroBtnCatalog) btnEl.textContent = s.heroBtnCatalog;
+
+    // Features
+    if (s.heroFeatures) {
+      const featuresContainer = document.querySelector('.hero-features');
+      if (featuresContainer) {
+        const features = s.heroFeatures.split(',').map(f => f.trim()).filter(f => f);
+        featuresContainer.innerHTML = features.map(f => `<div class="feature">${escapeHtml(f)}</div>`).join('');
+      }
+    }
+
+    // Categories
+    if (s.categories && s.categories.length) {
+      const catGrid = document.querySelector('.categories-grid');
+      if (catGrid) {
+        catGrid.innerHTML = s.categories.map(cat => `
+          <div class="category-card">
+            <div class="category-image">${cat.icon || '🌸'}</div>
+            <div class="category-info">
+              <h3>${escapeHtml(cat.name)}</h3>
+              <p>${escapeHtml(cat.desc)}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+  }
+
+  // Contacts
+  if (adminData.contacts) {
+    const c = adminData.contacts;
+
+    // Address
+    const addrVal = document.querySelector('.contact-item:nth-child(1) .contact-value');
+    if (addrVal && c.address) addrVal.textContent = c.address;
+
+    // Phone
+    const phoneLink = document.querySelector('a[href^="tel:"]');
+    const phoneVal = document.querySelector('.contact-item:nth-child(2) .contact-value');
+    if (phoneLink && c.rawPhone) phoneLink.href = 'tel:+' + c.rawPhone;
+    if (phoneVal && c.phone) phoneVal.textContent = c.phone;
+
+    // Email
+    const emailLink = document.querySelector('a[href^="mailto:"]');
+    const emailVal = document.querySelector('.contact-item:nth-child(3) .contact-value');
+    if (emailLink && c.email) emailLink.href = 'mailto:' + c.email;
+    if (emailVal && c.email) emailVal.textContent = c.email;
+
+    // Hours
+    const hoursVal = document.querySelector('.contact-item:nth-child(4) .contact-value');
+    if (hoursVal && c.hours) hoursVal.textContent = c.hours;
+
+    // WhatsApp
+    const waLinks = document.querySelectorAll('a[href^="https://wa.me/"]');
+    waLinks.forEach(link => {
+      if (c.rawPhone) link.href = 'https://wa.me/' + c.rawPhone;
+    });
+
+    // Instagram
+    const igLink = document.querySelector('a[href*="instagram.com"]');
+    if (igLink && c.instagram) igLink.href = 'https://www.instagram.com/' + c.instagram;
+
+    // Map
+    const mapLink = document.querySelector('.map-placeholder a');
+    if (mapLink && c.mapUrl) mapLink.href = c.mapUrl;
+
+    // Footer
+    const footerAddr = document.querySelector('.footer-contact p:nth-child(2)');
+    const footerHours = document.querySelector('.footer-contact p:nth-child(3)');
+    const footerPhone = document.querySelector('.footer-contact a[href^="tel:"]');
+    if (footerAddr && c.address) footerAddr.textContent = c.address;
+    if (footerHours && c.hours) footerHours.textContent = c.hours;
+    if (footerPhone && c.phone) {
+      footerPhone.textContent = c.phone;
+      if (c.rawPhone) footerPhone.href = 'tel:+' + c.rawPhone;
+    }
+  }
+
+  // About
+  if (adminData.about) {
+    const a = adminData.about;
+    const aboutTitle = document.querySelector('.about-content .section-title');
+    if (aboutTitle && a.title) aboutTitle.textContent = a.title;
+
+    const aboutText = document.querySelector('.about-text');
+    if (aboutText && a.desc) aboutText.textContent = a.desc;
+
+    if (a.stats && a.stats.length >= 3) {
+      const statNums = document.querySelectorAll('.stat-number');
+      const statLabels = document.querySelectorAll('.stat-label');
+      a.stats.forEach((s, i) => {
+        if (statNums[i] && s.num) statNums[i].textContent = s.num;
+        if (statLabels[i] && s.label) statLabels[i].textContent = s.label;
+      });
+    }
+
+    if (a.badge) {
+      const badgeNum = document.querySelector('.badge-number');
+      const badgeText = document.querySelector('.badge-text');
+      if (badgeNum && a.badge.num) badgeNum.textContent = a.badge.num;
+      if (badgeText && a.badge.text) badgeText.textContent = a.badge.text;
+    }
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
 let cart = [];
 
@@ -77,7 +235,7 @@ function renderProducts() {
       </div>
     </div>
   `).join('');
-  
+
   // Add click handlers
   document.querySelectorAll('.product-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -127,7 +285,7 @@ function updateCart() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
   cartCount.textContent = count;
   totalPrice.textContent = total + ' BYN';
-  
+
   if (cart.length === 0) {
     cartEmpty.style.display = 'block';
     cartItems.style.display = 'none';
@@ -174,13 +332,13 @@ window.addEventListener('scroll', () => {
   } else {
     navbar.classList.remove('scrolled');
   }
-  
+
   if (window.scrollY > 500) {
     scrollTop.classList.add('visible');
   } else {
     scrollTop.classList.remove('visible');
   }
-  
+
   // Active nav link
   const sections = document.querySelectorAll('section[id]');
   const scrollPos = window.scrollY + 100;
@@ -224,6 +382,20 @@ document.querySelectorAll('.category-card').forEach(card => {
   });
 });
 
+// ========== AUTO-REFRESH FROM ADMIN ==========
+// Проверяем обновления от админки каждые 2 секунды
+setInterval(() => {
+  const updated = localStorage.getItem('orchidDataUpdated');
+  if (updated) {
+    const lastCheck = window._lastAdminUpdate || 0;
+    if (parseInt(updated) > lastCheck) {
+      window._lastAdminUpdate = parseInt(updated);
+      location.reload();
+    }
+  }
+}, 2000);
+
 // ========== INIT ==========
+applyAdminSettings();
 renderProducts();
 console.log('Орхидея — Цветочный магазин. Сайт загружен.');
